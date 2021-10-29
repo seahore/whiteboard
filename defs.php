@@ -60,6 +60,15 @@ class card extends showableDecorator{
     }
 }
 
+class user {
+    var $name;
+    var $postCount;
+
+    function __construct($name, $postCount) {
+        $this->name = $name;
+        $this->postCount = $postCount;
+    }
+}
 
 class dataManager {
     static $conn;
@@ -73,6 +82,14 @@ class dataManager {
         $stmt = self::$conn->prepare("SELECT name FROM user WHERE id = " . $id); 
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC)["name"];
+    }
+
+    static function getUser($id) {
+        $name = self::getUsernameByID($id);
+        $stmt = self::$conn->prepare("SELECT COUNT(*) AS count FROM post WHERE author_id = " . $id); 
+        $stmt->execute();
+        $postCount = $stmt->fetch(PDO::FETCH_ASSOC)["count"];
+        return new user($name, $postCount);
     }
 
     private static function selectByID($id){
